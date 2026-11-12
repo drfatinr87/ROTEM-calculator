@@ -206,3 +206,535 @@
           </div>
           <div class="relative">
             <input type="number" id="mlEx" placeholder="%" min="0" max="100" step="1"
+              class="w-full bg-white border border-amber-200 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+            <span class="absolute right-2.5 top-2 text-[11px] text-slate-400">%</span>
+          </div>
+        </div>
+
+        <!-- EXTEM CT -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          <div class="flex justify-between items-baseline mb-1">
+            <label for="ctEx" class="text-xs font-bold text-slate-800">EXTEM CT</label>
+            <span class="text-[10px] text-slate-500">38–79</span>
+          </div>
+          <div class="relative">
+            <input type="number" id="ctEx" placeholder="sec" min="0" max="1200" step="1"
+              class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500" />
+            <span class="absolute right-2.5 top-2 text-[11px] text-slate-400">sec</span>
+          </div>
+        </div>
+
+        <!-- INTEM CT -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          <div class="flex justify-between items-baseline mb-1">
+            <label for="ctIn" class="text-xs font-bold text-slate-800">INTEM CT</label>
+            <span class="text-[10px] text-slate-500">100–240</span>
+          </div>
+          <div class="relative">
+            <input type="number" id="ctIn" placeholder="sec" min="0" max="1200" step="1"
+              class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500" />
+            <span class="absolute right-2.5 top-2 text-[11px] text-slate-400">sec</span>
+          </div>
+        </div>
+
+        <!-- HEPTEM CT -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+          <div class="flex justify-between items-baseline mb-1">
+            <label for="ctHep" class="text-xs font-bold text-slate-800">HEPTEM CT</label>
+            <span class="text-[10px] text-slate-500">Heparin</span>
+          </div>
+          <div class="relative">
+            <input type="number" id="ctHep" placeholder="sec" min="0" max="1200" step="1"
+              class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500" />
+            <span class="absolute right-2.5 top-2 text-[11px] text-slate-400">sec</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-1">
+        <label class="inline-flex items-center gap-2 select-none">
+          <input type="checkbox" id="ctFibFlat" class="w-4 h-4 rounded text-amber-600 border-slate-300" />
+          <span class="text-xs font-semibold text-slate-700">FIBTEM Flat-line (<span class="font-mono font-bold">CT_FIB &gt; 600 s</span>)</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 3. Recommended Actions -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">
+          3. Guided Transfusion & Dosing Plan
+        </h2>
+        <button type="button" id="btnCopy" class="bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
+          Copy Order Summary
+        </button>
+      </div>
+
+      <div id="resultsContainer" class="space-y-3"></div>
+    </section>
+
+  </main>
+
+  <!-- FLOWCHART & TABLES VIEW -->
+  <section id="viewRef" class="hidden max-w-3xl mx-auto px-4 pt-4 space-y-4">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+      <h2 class="text-sm font-extrabold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-2">
+        Cleaned-Up ROTEM A5 Algorithm
+      </h2>
+
+      <div class="border-l-4 border-amber-500 bg-amber-50/70 rounded-r-xl p-3 space-y-1">
+        <div class="text-xs font-extrabold uppercase text-amber-800">Step 1: Stop Fibrinolysis</div>
+        <p class="text-xs text-slate-800 font-medium">Trigger: <span class="font-mono font-bold">A5_EX &lt; 35 mm</span> OR <span class="font-mono font-bold">CT_FIB &gt; 600 s</span> OR <span class="font-mono font-bold">ML ≥ 5–10%</span></p>
+        <p class="text-xs text-slate-700"><strong>TXA:</strong> Trauma <strong>25 mg/kg</strong> IV bolus (&lt;3h) | PPH <strong>1–2 g</strong> IV bolus.</p>
+      </div>
+
+      <div class="border-l-4 border-rose-600 bg-rose-50/60 rounded-r-xl p-3 space-y-2">
+        <div class="text-xs font-extrabold uppercase text-rose-800">Step 2: Build Clot Firmness (EXTEM A5 &lt; 35 mm)</div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <div class="bg-white p-2.5 rounded-xl border border-rose-200">
+            <div class="font-bold text-rose-700 mb-1">Severe (&lt; 20 mm)</div>
+            <p class="text-slate-700">Give <strong>BOTH</strong> Cryo/Fibrinogen + Platelets immediately.</p>
+          </div>
+          <div class="bg-white p-2.5 rounded-xl border border-rose-200">
+            <div class="font-bold text-rose-700 mb-1">Low Fibrinogen</div>
+            <p class="text-slate-700"><span class="font-mono font-bold">A5_FIB &lt; 9 mm</span> (Trauma) or <span class="font-mono font-bold">&lt; 10.4 mm</span> (PPH).<br/>Target: <strong>≥ 12 mm</strong> (Trauma) | <strong>≥ 13.9 mm</strong> (PPH).</p>
+          </div>
+          <div class="bg-white p-2.5 rounded-xl border border-blue-200">
+            <div class="font-bold text-blue-700 mb-1">Low Platelets</div>
+            <p class="text-slate-700"><span class="font-mono font-bold">A5_FIB ≥ 9 mm</span> (Trauma) or <span class="font-mono font-bold">&gt; 10.4 mm</span> (PPH).<br/>Adult: <strong>1U/15kg</strong> (4–6U) or 1 apheresis | Paeds: <strong>15 mL/kg</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-l-4 border-indigo-600 bg-indigo-50/60 rounded-r-xl p-3 space-y-1">
+        <div class="text-xs font-extrabold uppercase text-indigo-800">Step 3: Fix Clot Initiation (Clotting Time CT)</div>
+        <ul class="text-xs text-slate-700 space-y-1 list-disc pl-4">
+          <li><strong>EXTEM CT &gt; 80 s</strong> (with adequate A5_FIB) &rarr; <strong>4F-PCC (15–25 IU/kg)</strong> OR <strong>FFP (10–15 mL/kg)</strong>.</li>
+          <li><strong>INTEM CT &gt; 240 s</strong> &amp; HEPTEM normalizes (<span class="font-mono font-bold">CT_IN/CT_HEP ≥ 1.25</span>) &rarr; <strong>Protamine (25–50 mg)</strong>.</li>
+          <li><strong>INTEM CT &gt; 240 s</strong> &amp; HEPTEM still &gt; 240 s &rarr; <strong>FFP (10–15 mL/kg)</strong>.</li>
+        </ul>
+      </div>
+
+      <div class="border-l-4 border-slate-600 bg-slate-100 rounded-r-xl p-3">
+        <div class="text-xs font-extrabold uppercase text-slate-800">Step 4: Re-Evaluate</div>
+        <p class="text-xs text-slate-700">If bleeding continues, repeat ROTEM <strong>10–15 minutes</strong> after transfusion completion.</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 overflow-x-auto">
+      <h3 class="text-sm font-bold text-slate-900 mb-1">Fibrinogen & Cryoprecipitate Lookup Table</h3>
+      <p class="text-xs text-slate-500 mb-3">Formula: <span class="font-mono">Dose (g) = [Target A5_FIB rise × Weight] / 160</span> &bull; 1 U Cryo ≈ 300 mg &bull; 10 U Cryo ≈ 2 g</p>
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+            <th class="py-2 px-2.5 font-bold">Target Rise</th>
+            <th class="py-2 px-2.5 font-bold">Fib Dose</th>
+            <th class="py-2 px-2.5 font-bold">Fib Concentrate</th>
+            <th class="py-2 px-2.5 font-bold">Cryoprecipitate</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-slate-700">
+          <tr><td class="py-2 px-2.5 font-bold">2 mm</td><td class="py-2 px-2.5">12.5 mg/kg</td><td class="py-2 px-2.5">0.6 mL/kg (1 g / 80 kg)</td><td class="py-2 px-2.5">1 mL/kg (5 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-2.5 font-bold">4 mm</td><td class="py-2 px-2.5">25.0 mg/kg</td><td class="py-2 px-2.5">1.2 mL/kg (2 g / 80 kg)</td><td class="py-2 px-2.5">2 mL/kg (10 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-2.5 font-bold">6 mm</td><td class="py-2 px-2.5">37.5 mg/kg</td><td class="py-2 px-2.5">1.9 mL/kg (3 g / 80 kg)</td><td class="py-2 px-2.5">3 mL/kg (15 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-2.5 font-bold">8 mm</td><td class="py-2 px-2.5">50.0 mg/kg</td><td class="py-2 px-2.5">2.5 mL/kg (4 g / 80 kg)</td><td class="py-2 px-2.5">4 mL/kg (20 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-2.5 font-bold">10 mm</td><td class="py-2 px-2.5">62.5 mg/kg</td><td class="py-2 px-2.5">3.1 mL/kg (5 g / 80 kg)</td><td class="py-2 px-2.5">5 mL/kg (25 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-2.5 font-bold">12 mm</td><td class="py-2 px-2.5">75.0 mg/kg</td><td class="py-2 px-2.5">3.8 mL/kg (6 g / 80 kg)</td><td class="py-2 px-2.5">6 mL/kg (30 U / 80 kg)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let protocol = 'trauma';
+      let ageGroup = 'adult';
+      let latestOrderText = '';
+
+      const el = (id) => document.getElementById(id);
+
+      function switchTab(tab) {
+        if (tab === 'calc') {
+          el('viewCalc').classList.remove('hidden');
+          el('viewRef').classList.add('hidden');
+          el('navCalc').className = 'bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition';
+          el('navRef').className = 'bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition';
+        } else {
+          el('viewCalc').classList.add('hidden');
+          el('viewRef').classList.remove('hidden');
+          el('navRef').className = 'bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition';
+          el('navCalc').className = 'bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition';
+        }
+      }
+
+      function setProtocol(val) {
+        protocol = val;
+        if (val === 'trauma') {
+          el('protoTrauma').className = 'bg-white text-slate-900 shadow-sm py-2 text-xs font-bold rounded-lg transition';
+          el('protoPph').className = 'text-slate-600 py-2 text-xs font-bold rounded-lg transition';
+        } else {
+          el('protoPph').className = 'bg-white text-slate-900 shadow-sm py-2 text-xs font-bold rounded-lg transition';
+          el('protoTrauma').className = 'text-slate-600 py-2 text-xs font-bold rounded-lg transition';
+        }
+        calculate();
+      }
+
+      function setAgeGroup(val) {
+        ageGroup = val;
+        if (val === 'adult') {
+          el('ageAdult').className = 'bg-white text-slate-900 shadow-sm py-2 text-xs font-bold rounded-lg transition';
+          el('agePaeds').className = 'text-slate-600 py-2 text-xs font-bold rounded-lg transition';
+        } else {
+          el('agePaeds').className = 'bg-white text-slate-900 shadow-sm py-2 text-xs font-bold rounded-lg transition';
+          el('ageAdult').className = 'text-slate-600 py-2 text-xs font-bold rounded-lg transition';
+        }
+        calculate();
+      }
+
+      function resetForm(runCalc = true) {
+        el('activeBleeding').checked = true;
+        el('a5Ex').value = '';
+        el('a5Fib').value = '';
+        el('mlEx').value = '';
+        el('ctEx').value = '';
+        el('ctIn').value = '';
+        el('ctHep').value = '';
+        el('ctFibFlat').checked = false;
+        if (runCalc) calculate();
+      }
+
+      function loadPreset(type) {
+        resetForm(false);
+        el('activeBleeding').checked = true;
+        if (type === 'normal') {
+          setProtocol('trauma');
+          setAgeGroup('adult');
+          el('weightInput').value = 70;
+          el('a5Ex').value = 44;
+          el('a5Fib').value = 14;
+          el('mlEx').value = 3;
+          el('ctEx').value = 58;
+          el('ctIn').value = 165;
+        } else if (type === 'polytrauma') {
+          setProtocol('trauma');
+          setAgeGroup('adult');
+          el('weightInput').value = 70;
+          el('a5Ex').value = 28;
+          el('a5Fib').value = 6;
+          el('mlEx').value = 4;
+          el('ctEx').value = 72;
+        } else if (type === 'severe') {
+          setProtocol('trauma');
+          setAgeGroup('adult');
+          el('weightInput').value = 80;
+          el('a5Ex').value = 16;
+          el('a5Fib').value = 4;
+          el('mlEx').value = 18;
+          el('ctEx').value = 95;
+        } else if (type === 'pph') {
+          setProtocol('pph');
+          setAgeGroup('adult');
+          el('weightInput').value = 65;
+          el('a5Ex').value = 29;
+          el('a5Fib').value = 8.5;
+          el('mlEx').value = 12;
+          el('ctEx').value = 74;
+        } else if (type === 'platelets') {
+          setProtocol('trauma');
+          setAgeGroup('adult');
+          el('weightInput').value = 75;
+          el('a5Ex').value = 27;
+          el('a5Fib').value = 12;
+          el('mlEx').value = 2;
+          el('ctEx').value = 65;
+        } else if (type === 'heparin') {
+          setProtocol('trauma');
+          setAgeGroup('adult');
+          el('weightInput').value = 75;
+          el('a5Ex').value = 42;
+          el('a5Fib').value = 14;
+          el('ctIn').value = 310;
+          el('ctHep').value = 210;
+        }
+        calculate();
+      }
+
+      function num(id) {
+        const v = el(id).value;
+        return v === '' ? null : parseFloat(v);
+      }
+
+      function calculate() {
+        const isBleeding = el('activeBleeding').checked;
+        const bleedingCard = el('bleedingCard');
+
+        if (!isBleeding) {
+          bleedingCard.className = 'rounded-2xl p-3.5 border-2 border-slate-300 bg-slate-50 flex items-start gap-3 transition';
+          el('resultsContainer').innerHTML = `
+            <div class="bg-slate-800 text-white rounded-2xl p-4 space-y-1">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-amber-400">Algorithm Halted</div>
+              <p class="text-sm font-bold">No Active Diffuse or Massive Bleeding</p>
+              <p class="text-xs text-slate-300">Do not treat isolated abnormal ROTEM numbers in the absence of clinically significant bleeding.</p>
+            </div>`;
+          latestOrderText = 'ROTEM: No active diffuse/massive bleeding — hemostatic therapy not indicated.';
+          return;
+        } else {
+          bleedingCard.className = 'rounded-2xl p-3.5 border-2 border-rose-500 bg-rose-50/40 flex items-start gap-3 transition';
+        }
+
+        const weight = num('weightInput') || 70;
+        const a5Ex = num('a5Ex');
+        const a5Fib = num('a5Fib');
+        const mlEx = num('mlEx');
+        const ctEx = num('ctEx');
+        const ctIn = num('ctIn');
+        const ctHep = num('ctHep');
+        const ctFibFlat = el('ctFibFlat').checked;
+
+        const fibTrigger = protocol === 'trauma' ? 9.0 : 10.4;
+        const fibTarget = protocol === 'trauma' ? 12.0 : 13.9;
+        const mlTrigger = protocol === 'trauma' ? 5 : 10;
+
+        const hasAnyInput = [a5Ex, a5Fib, mlEx, ctEx, ctIn, ctHep].some(v => v !== null) || ctFibFlat;
+        if (!hasAnyInput) {
+          el('resultsContainer').innerHTML = `
+            <div class="bg-white rounded-2xl p-5 text-center border border-slate-200 text-slate-500 text-xs">
+              Enter ROTEM values above (or tap a Quick Test Case) to calculate guided component doses.
+            </div>`;
+          latestOrderText = '';
+          return;
+        }
+
+        const actions = [];
+        const orderLines = [`ROTEM ORDER SUMMARY (${protocol.toUpperCase()} | ${ageGroup.toUpperCase()} | ${weight} kg)`];
+
+        // Step 1: Fibrinolysis / TXA
+        const txaReasons = [];
+        if (a5Ex !== null && a5Ex < 35) txaReasons.push(`EXTEM A5 (${a5Ex} mm) < 35 mm`);
+        if (ctFibFlat) txaReasons.push(`FIBTEM Flat-line (CT > 600 s)`);
+        if (mlEx !== null && mlEx >= mlTrigger) txaReasons.push(`ML (${mlEx}%) ≥ ${mlTrigger}%`);
+
+        if (txaReasons.length > 0) {
+          const txaDose = protocol === 'trauma'
+            ? `<strong>${Math.round(25 * weight)} mg</strong> (25 mg/kg) IV single bolus (within 3h)`
+            : `<strong>1–2 g</strong> IV bolus (repeat if indicated)`;
+          actions.push({
+            step: 'STEP 1 • STOP FIBRINOLYSIS',
+            title: 'Administer Tranexamic Acid (TXA)',
+            color: 'amber',
+            reason: txaReasons.join(' + '),
+            dose: txaDose,
+            note: 'Give immediately before or alongside blood components.'
+          });
+          orderLines.push(`• TXA: ${txaDose.replace(/<[^>]*>/g, '')}`);
+        }
+
+        // Step 2: Clot Firmness
+        let needFib = false;
+        let needPlt = false;
+        let severeCombined = false;
+
+        if (a5Ex !== null && a5Ex < 35) {
+          if (a5Ex < 20) {
+            severeCombined = true;
+            needPlt = true;
+            if (a5Fib === null || a5Fib < fibTarget) needFib = true;
+          } else {
+            if (a5Fib !== null) {
+              if (a5Fib < fibTrigger) needFib = true;
+              else needPlt = true;
+            } else {
+              actions.push({
+                step: 'STEP 2 • BUILD CLOT FIRMNESS',
+                title: 'Enter FIBTEM A5 to Differentiate Deficit',
+                color: 'blue',
+                reason: `EXTEM A5 is low (${a5Ex} mm < 35 mm), FIBTEM A5 pending.`,
+                dose: `If FIBTEM A5 < ${fibTrigger} mm &rarr; Cryo/Fibrinogen; if ≥ ${fibTrigger} mm &rarr; Platelets.`,
+                note: ''
+              });
+            }
+          }
+        } else if (a5Fib !== null && a5Fib < fibTrigger) {
+          needFib = true;
+        }
+
+        if (needFib) {
+          const currFib = a5Fib !== null ? a5Fib : 0;
+          const rise = Math.max(0, +(fibTarget - currFib).toFixed(1));
+          const fibGrams = +((rise * weight) / 160).toFixed(2);
+          const fibMg = Math.round(fibGrams * 1000);
+          const singleCryo = Math.ceil(fibMg / 300);
+          const pooledCryo = Math.floor(fibGrams / 2);
+          const remCryo = Math.ceil(((fibGrams % 2) * 1000) / 300);
+
+          let cryoStr = `${singleCryo} U Cryoprecipitate (~300 mg/U)`;
+          if (pooledCryo >= 1) {
+            cryoStr += remCryo > 0
+              ? ` OR ${pooledCryo} pooled cryo (2g) + ${remCryo} single U`
+              : ` OR ${pooledCryo} pooled cryo (2g/pack)`;
+          }
+
+          actions.push({
+            step: 'STEP 2 • FIBRINOGEN REPLACEMENT',
+            title: 'Give Cryoprecipitate OR Fibrinogen Concentrate',
+            color: 'red',
+            reason: severeCombined
+              ? `Severe deficit: EXTEM A5 (${a5Ex} mm) < 20 mm` + (a5Fib !== null ? ` & FIBTEM A5 (${a5Fib} mm) < ${fibTrigger} mm` : '')
+              : `FIBTEM A5 (${a5Fib} mm) < ${fibTrigger} mm`,
+            dose: a5Fib !== null
+              ? `Target A5_FIB ≥ ${fibTarget} mm (+${rise} mm): <strong>${fibGrams} g (${fibMg} mg)</strong> Fib Concentrate &nbsp;OR&nbsp; <strong>${cryoStr}</strong>`
+              : `Target A5_FIB ≥ ${fibTarget} mm (≥ 4 g Fib Concentrate or 15–20 U Cryo empirically)`,
+            note: `Formula: (${rise} mm × ${weight} kg) / 160 = ${fibGrams} g.`
+          });
+          orderLines.push(`• Fibrinogen: ${fibGrams} g (${fibMg} mg) OR ${cryoStr}`);
+        }
+
+        if (needPlt) {
+          const pltUnits = Math.max(1, Math.round(weight / 15));
+          const paedsVol = Math.round(15 * weight);
+          const pltDose = ageGroup === 'adult'
+            ? `<strong>1 unit per 15 kg (~${pltUnits} random U, or 4–6 U pooled / 1 apheresis pack)</strong>`
+            : `<strong>${paedsVol} mL (15 mL/kg BW)</strong> Platelet Concentrate`;
+
+          actions.push({
+            step: 'STEP 2 • PLATELET REPLACEMENT',
+            title: 'Transfuse Platelet Concentrate',
+            color: 'blue',
+            reason: severeCombined
+              ? `Severe deficit: EXTEM A5 (${a5Ex} mm) < 20 mm (give concurrently with fibrinogen)`
+              : `EXTEM A5 (${a5Ex} mm) < 35 mm WITH adequate FIBTEM A5 (${a5Fib} mm ≥ ${fibTrigger} mm)`,
+            dose: pltDose,
+            note: a5Ex !== null && a5Ex < 25 && !severeCombined ? 'Consider 2 pooled/apheresis packs if A5_EX < 25 mm with severe bleeding.' : ''
+          });
+          orderLines.push(`• Platelets: ${ageGroup === 'adult' ? `${pltUnits} random U (4–6 U pooled / 1 apheresis)` : `${paedsVol} mL (15 mL/kg)`}`);
+        }
+
+        // Step 3: Clotting Times
+        if (ctEx !== null && ctEx > 80) {
+          const pccLow = Math.round(15 * weight);
+          const pccHigh = Math.round(25 * weight);
+          const ffpLow = Math.round(10 * weight);
+          const ffpHigh = Math.round(15 * weight);
+          actions.push({
+            step: 'STEP 3 • EXTRINSIC FACTORS',
+            title: 'Give 4-Factor PCC OR Fresh Frozen Plasma (FFP)',
+            color: 'indigo',
+            reason: `EXTEM CT (${ctEx} s) > 80 s`,
+            dose: `<strong>4F-PCC: ${pccLow}–${pccHigh} IU</strong> (15–25 IU/kg) &nbsp;OR&nbsp; <strong>FFP: ${ffpLow}–${ffpHigh} mL</strong> (10–15 mL/kg)`,
+            note: 'Ensure FIBTEM A5 is corrected alongside/prior to interpreting prolonged EXTEM CT.'
+          });
+          orderLines.push(`• Factors: 4F-PCC ${pccLow}–${pccHigh} IU OR FFP ${ffpLow}–${ffpHigh} mL`);
+        }
+
+        if (ctIn !== null && ctIn > 240) {
+          if (ctHep !== null && ctHep > 0) {
+            const ratio = +(ctIn / ctHep).toFixed(2);
+            if (ratio >= 1.25 || ctHep <= 240) {
+              actions.push({
+                step: 'STEP 3 • HEPARIN REVERSAL',
+                title: 'Administer Protamine (Heparin Effect)',
+                color: 'purple',
+                reason: `INTEM CT (${ctIn} s) > 240 s & corrects on HEPTEM (${ctHep} s) — Ratio: ${ratio}`,
+                dose: `<strong>Protamine: 25–50 mg IV</strong> (2.5–5 mL)`,
+                note: 'Re-check INTEM/HEPTEM 10–15 min post-protamine.'
+              });
+              orderLines.push(`• Protamine: 25–50 mg IV (ratio ${ratio})`);
+            } else {
+              const ffpLow = Math.round(10 * weight);
+              const ffpHigh = Math.round(15 * weight);
+              actions.push({
+                step: 'STEP 3 • INTRINSIC FACTORS',
+                title: 'Consider Fresh Frozen Plasma (FFP)',
+                color: 'indigo',
+                reason: `INTEM CT (${ctIn} s) > 240 s & HEPTEM CT (${ctHep} s) remains prolonged (Ratio: ${ratio})`,
+                dose: `<strong>FFP: ${ffpLow}–${ffpHigh} mL</strong> (10–15 mL/kg)`,
+                note: 'Rules out isolated heparin effect.'
+              });
+              orderLines.push(`• Intrinsic Factors: FFP ${ffpLow}–${ffpHigh} mL`);
+            }
+          } else {
+            actions.push({
+              step: 'STEP 3 • INTRINSIC PATHWAY CHECK',
+              title: 'Compare INTEM CT with HEPTEM CT',
+              color: 'purple',
+              reason: `INTEM CT (${ctIn} s) > 240 s, HEPTEM CT not entered.`,
+              dose: `Enter HEPTEM CT: If CT_IN/CT_HEP ≥ 1.25 &rarr; <strong>Protamine 25–50 mg</strong>; if still &gt; 240 s &rarr; <strong>FFP ${Math.round(10*weight)}–${Math.round(15*weight)} mL</strong>.`,
+              note: ''
+            });
+          }
+        }
+
+        if (actions.length === 0) {
+          el('resultsContainer').innerHTML = `
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 space-y-1">
+              <div class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Within Target Thresholds</div>
+              <p class="text-sm font-bold text-emerald-950">No hemostatic components indicated based on entered ROTEM values.</p>
+              <p class="text-xs text-emerald-800">Assess for surgical bleeding, optimize basic conditions (Temp, pH, Ca²⁺, Hb), and repeat ROTEM in 10–15 min if bleeding continues.</p>
+            </div>`;
+          latestOrderText = orderLines.join('\n') + '\n• All entered parameters within target thresholds.';
+          return;
+        }
+
+        const styles = {
+          amber: { border: 'border-amber-500', bg: 'bg-amber-50', badge: 'bg-amber-200 text-amber-900', title: 'text-amber-950' },
+          red: { border: 'border-rose-600', bg: 'bg-rose-50', badge: 'bg-rose-200 text-rose-900', title: 'text-rose-950' },
+          blue: { border: 'border-blue-600', bg: 'bg-blue-50', badge: 'bg-blue-200 text-blue-900', title: 'text-blue-950' },
+          indigo: { border: 'border-indigo-600', bg: 'bg-indigo-50', badge: 'bg-indigo-200 text-indigo-900', title: 'text-indigo-950' },
+          purple: { border: 'border-purple-600', bg: 'bg-purple-50', badge: 'bg-purple-200 text-purple-900', title: 'text-purple-950' }
+        };
+
+        el('resultsContainer').innerHTML = actions.map(a => {
+          const s = styles[a.color];
+          return `
+            <div class="bg-white border-l-4 ${s.border} rounded-r-2xl rounded-l-md p-4 shadow-sm border-y border-r border-slate-200 space-y-1.5">
+              <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md ${s.badge}">${a.step}</span>
+              <h3 class="text-sm font-bold ${s.title}">${a.title}</h3>
+              <p class="text-xs text-slate-600"><strong>Trigger:</strong> ${a.reason}</p>
+              <div class="${s.bg} rounded-xl px-3 py-2 text-xs text-slate-900 border border-slate-200/60">${a.dose}</div>
+              ${a.note ? `<p class="text-[11px] text-slate-500 italic">${a.note}</p>` : ''}
+            </div>`;
+        }).join('') + `
+          <div class="bg-slate-900 text-slate-200 rounded-2xl p-3.5 text-xs">
+            <strong class="text-white">STEP 4 • RE-EVALUATE:</strong> If diffuse bleeding persists, draw a fresh sample <strong>10–15 min</strong> post-transfusion to repeat ROTEM.
+          </div>`;
+
+        latestOrderText = orderLines.join('\n');
+      }
+
+      // Event Listeners (Mobile Safari Safe)
+      el('navCalc').addEventListener('click', () => switchTab('calc'));
+      el('navRef').addEventListener('click', () => switchTab('ref'));
+      el('btnReset').addEventListener('click', () => resetForm(true));
+      el('protoTrauma').addEventListener('click', () => setProtocol('trauma'));
+      el('protoPph').addEventListener('click', () => setProtocol('pph'));
+      el('ageAdult').addEventListener('click', () => setAgeGroup('adult'));
+      el('agePaeds').addEventListener('click', () => setAgeGroup('paeds'));
+      el('activeBleeding').addEventListener('change', calculate);
+      el('ctFibFlat').addEventListener('change', calculate);
+
+      ['weightInput', 'a5Ex', 'a5Fib', 'mlEx', 'ctEx', 'ctIn', 'ctHep'].forEach(id => {
+        el(id).addEventListener('input', calculate);
+      });
+
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadPreset(btn.getAttribute('data-preset')));
+      });
+
+      el('btnCopy').addEventListener('click', () => {
+        if (!latestOrderText) return;
+        navigator.clipboard.writeText(latestOrderText).then(() => {
+          const btn = el('btnCopy');
+          btn.textContent = 'Copied!';
+          btn.classList.replace('bg-slate-900', 'bg-emerald-600');
+          setTimeout(() => {
+            btn.textContent = 'Copy Order Summary';
+            btn.classList.replace('bg-emerald-600', 'bg-slate-900');
+          }, 1800);
+        });
+      });
+
+      calculate();
+    });
+  </script>
+</body>
+</html>
