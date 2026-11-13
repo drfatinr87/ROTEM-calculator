@@ -37,4 +37,823 @@
           ROTEM
         </div>
         <div>
-          <h1 class="text-sm sm:text-base font-bold leading-snug text-white">
+          <h1 class="text-sm sm:text-base font-bold leading-snug text-white">Bedside Decision Support &amp; Dosing</h1>
+          <p class="text-[11px] text-slate-400">Targeted Bleeding Management Algorithm (A5 / CT)</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="navCalc" class="bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">
+          Calculator
+        </button>
+        <button type="button" id="navRef" class="bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition">
+          Flowchart &amp; Tables
+        </button>
+        <button type="button" id="btnReset" class="bg-slate-900 text-rose-400 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition">
+          Reset
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CALCULATOR VIEW -->
+  <main id="viewCalc" class="max-w-6xl mx-auto px-4 pt-4 space-y-4">
+
+    <!-- Prerequisites Banner -->
+    <section class="bg-white rounded-2xl px-4 py-3 shadow-sm border-l-4 border-teal-600 border-y border-r border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div>
+        <div class="text-[11px] font-extrabold uppercase tracking-wider text-teal-700">Prerequisites &amp; Sample Check</div>
+        <p class="text-xs text-slate-700 mt-0.5">
+          <strong class="text-slate-900">Optimize:</strong> Temp &gt; 35°C &bull; pH &gt; 7.2–7.3 &bull; Ca²⁺ &gt; 1.0 mmol/L &bull; Hb &gt; 7 g/dL
+        </p>
+      </div>
+      <div class="bg-teal-50 border border-teal-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-teal-900 shrink-0">
+        3 mL Blue-Top Citrate &bull; Invert 6–8x
+      </div>
+    </section>
+
+    <!-- Quick Test Cases -->
+    <section class="bg-white rounded-2xl px-4 py-3 shadow-sm border border-slate-200 flex flex-wrap items-center gap-2">
+      <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 mr-1">Quick Test Cases:</span>
+      <button type="button" data-preset="normal" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">Normal Trace</button>
+      <button type="button" data-preset="isolatedFib" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-rose-50 text-rose-800 border border-rose-200">Isolated Low Fib (A5_EX 42, FIB 8)</button>
+      <button type="button" data-preset="polytrauma" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-rose-50 text-rose-800 border border-rose-200">70kg Polytrauma (Low Fib)</button>
+      <button type="button" data-preset="severe15" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-red-100 text-red-900 border border-red-300">Severe (&lt;15mm + Lysis)</button>
+      <button type="button" data-preset="pph" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-50 text-amber-800 border border-amber-200">Obstetric PPH</button>
+      <button type="button" data-preset="dapt" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-200">DAPT / Low ADPTEM</button>
+      <button type="button" data-preset="heparin" class="preset-btn text-xs font-semibold px-2.5 py-1 rounded-xl bg-purple-50 text-purple-800 border border-purple-200">Heparin Effect</button>
+    </section>
+
+    <!-- 2-Column Split Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+
+      <!-- LEFT COLUMN: INPUTS -->
+      <div class="lg:col-span-5 space-y-4">
+
+        <!-- 1. Patient & Clinical Context -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3.5">
+          <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">1. Patient &amp; Clinical Context</h2>
+
+          <div id="bleedingCard" class="rounded-2xl p-3 border-2 border-rose-500 bg-rose-50/40 flex items-start gap-2.5 transition">
+            <input type="checkbox" id="activeBleeding" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 border-slate-300 shrink-0" />
+            <div>
+              <div class="text-xs font-bold text-slate-900">Active Diffuse / Massive Bleeding</div>
+              <p id="bleedingSubtext" class="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                Transfusion considered (MTP, BE &lt; -6, Hb &lt; 10, ISS ≥ 25, TASH ≥ 15)
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Clinical Protocol</div>
+            <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+              <button type="button" id="protoTrauma" class="bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition">Trauma / General</button>
+              <button type="button" id="protoPph" class="text-slate-600 py-1.5 text-xs font-bold rounded-lg transition">Obstetric PPH</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Patient Group</div>
+              <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl">
+                <button type="button" id="ageAdult" class="bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition">Adult</button>
+                <button type="button" id="agePaeds" class="text-slate-600 py-1.5 text-xs font-bold rounded-lg transition">Paeds</button>
+              </div>
+            </div>
+            <div>
+              <label for="weightInput" class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Body Weight (kg)</label>
+              <div class="relative">
+                <input type="number" id="weightInput" value="70" min="1" max="300" step="0.5"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span class="absolute right-3 top-2 text-xs font-bold text-slate-400">kg</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Enter ROTEM Parameters -->
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">2. Enter ROTEM Parameters</h2>
+            <span class="text-[11px] text-slate-400">Leave blank if pending</span>
+          </div>
+
+          <!-- Clot Firmness -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-rose-700">Clot Firmness (A5 Amplitude)</div>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                <label for="a5Ex" class="block text-[11px] font-bold text-slate-800 mb-1">EXTEM A5 (mm)</label>
+                <input type="number" id="a5Ex" placeholder="e.g. 42" min="0" max="100" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <div class="text-[10px] text-slate-500 mt-1">Normal: 34–55 (Trigger &lt;35)</div>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                <label for="a5Fib" class="block text-[11px] font-bold text-slate-800 mb-1">FIBTEM A5 (mm)</label>
+                <input type="number" id="a5Fib" placeholder="e.g. 14" min="0" max="60" step="0.5"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500" />
+                <div id="fibHint" class="text-[10px] text-slate-500 mt-1">Normal: 9–25 (Trigger &lt;9)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Platelet Function (ADPTEM / TRAPTEM / DAPT) -->
+          <div class="border border-blue-100 bg-blue-50/40 rounded-xl p-2.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-800">Platelet Function (Optional)</span>
+              <span class="text-[10px] text-slate-500">ROTEM Platelet / Multiplate</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="adptem" class="block text-[10px] font-bold text-slate-700 mb-0.5">ADPTEM (Ω·min)</label>
+                <input type="number" id="adptem" placeholder="e.g. 45" min="0" max="200" step="1"
+                  class="w-full bg-white border border-blue-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900" />
+                <div id="adpHint" class="text-[9px] text-slate-500 mt-0.5">Trigger &lt;40 (DDAVP &lt;30)</div>
+              </div>
+              <div>
+                <label for="traptem" class="block text-[10px] font-bold text-slate-700 mb-0.5">TRAPTEM (Ω·min)</label>
+                <input type="number" id="traptem" placeholder="e.g. 60" min="0" max="250" step="1"
+                  class="w-full bg-white border border-blue-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-900" />
+                <div id="trapHint" class="text-[9px] text-slate-500 mt-0.5">2 PCs if ADP&lt;40 &amp; TRAP&lt;50</div>
+              </div>
+            </div>
+            <label class="inline-flex items-center gap-2 pt-0.5">
+              <input type="checkbox" id="onDapt" class="w-3.5 h-3.5 rounded text-blue-600 border-slate-300" />
+              <span class="text-[11px] font-semibold text-slate-700">Patient on Dual Antiplatelet Therapy (DAPT)</span>
+            </label>
+          </div>
+
+          <!-- Fibrinolysis & Flat-line Check -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700">Fibrinolysis &amp; Flat-Line Check</div>
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                <label for="mlEx" class="block text-[11px] font-bold text-slate-800 mb-1">EXTEM ML (%)</label>
+                <input type="number" id="mlEx" placeholder="e.g. 3" min="0" max="100" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                <div id="mlHint" class="text-[10px] text-slate-500 mt-1">Normal: 0–15% (Trigger ≥5%)</div>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5">
+                <label for="ctFib" class="block text-[11px] font-bold text-slate-800 mb-1">FIBTEM CT (sec)</label>
+                <input type="number" id="ctFib" placeholder="e.g. 65" min="0" max="1500" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                <label class="inline-flex items-center gap-1.5 mt-1.5">
+                  <input type="checkbox" id="ctFibFlat" class="w-3.5 h-3.5 rounded text-amber-600 border-slate-300" />
+                  <span class="text-[10px] font-semibold text-slate-700">Flat-line (&gt; 600 s)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clot Initiation -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-700">Clot Initiation (Clotting Time CT)</div>
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                <label for="ctEx" class="block text-[10px] font-bold text-slate-800 mb-1">EXTEM CT</label>
+                <input type="number" id="ctEx" placeholder="sec" min="0" max="1200" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-900" />
+                <div class="text-[9px] text-slate-500 mt-1">Norm: 38–79 s</div>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                <label for="ctIn" class="block text-[10px] font-bold text-slate-800 mb-1">INTEM CT</label>
+                <input type="number" id="ctIn" placeholder="sec" min="0" max="1200" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-900" />
+                <div class="text-[9px] text-slate-500 mt-1">Norm: 100–240 s</div>
+              </div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-2">
+                <label for="ctHep" class="block text-[10px] font-bold text-slate-800 mb-1">HEPTEM CT</label>
+                <input type="number" id="ctHep" placeholder="sec" min="0" max="1200" step="1"
+                  class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-bold text-slate-900" />
+                <div class="text-[9px] text-slate-500 mt-1">Norm: 100–240 s</div>
+              </div>
+            </div>
+            <label class="inline-flex items-center gap-2 pt-1">
+              <input type="checkbox" id="refractoryFfp" class="w-3.5 h-3.5 rounded text-indigo-600 border-slate-300" />
+              <span id="rfviiaLabel" class="text-[11px] font-semibold text-slate-700">FFP ineffective (A5_EX &amp; A5_FIB OK) &rarr; Consider rFVIIa</span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: ACTIVE BEDSIDE SUMMARY -->
+      <div class="lg:col-span-7 space-y-3">
+
+        <!-- Summary Header Box -->
+        <div id="summaryBanner" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Active Bedside Summary</div>
+            <div id="summaryHeadline" class="text-sm sm:text-base font-extrabold text-slate-900 mt-0.5">
+              Enter ROTEM values to generate targeted therapy
+            </div>
+          </div>
+          <button type="button" id="btnCopy" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-300 transition shrink-0">
+            Copy Order Summary
+          </button>
+        </div>
+
+        <!-- Step 1 Card -->
+        <div id="cardStep1" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md">STEP 1</span>
+              <h3 class="text-sm font-bold text-slate-900">Stop Fibrinolysis (Clot Breakdown)</h3>
+            </div>
+            <span id="badgeStep1" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">Awaiting Input</span>
+          </div>
+          <div id="bodyStep1" class="text-xs text-slate-600 leading-relaxed">
+            Checks if <span class="font-mono">EXTEM A5 &lt; 35 mm</span> OR <span class="font-mono">FIBTEM CT &gt; 600 s</span> OR <span class="font-mono">ML ≥ 5%</span>.
+          </div>
+        </div>
+
+        <!-- Step 2 Card -->
+        <div id="cardStep2" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md">STEP 2</span>
+              <h3 class="text-sm font-bold text-slate-900">Build Clot Firmness (Fibrinogen &amp; Platelets)</h3>
+            </div>
+            <span id="badgeStep2" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">Awaiting EXTEM A5</span>
+          </div>
+          <div id="bodyStep2" class="text-xs text-slate-600 leading-relaxed">
+            Enter EXTEM A5 and/or FIBTEM A5 (plus optional ADPTEM/TRAPTEM) to evaluate clot strength.
+          </div>
+        </div>
+
+        <!-- Step 3 Card -->
+        <div id="cardStep3" class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="bg-slate-900 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md">STEP 3</span>
+              <h3 class="text-sm font-bold text-slate-900">Fix Clot Initiation (Factors &amp; Heparin)</h3>
+            </div>
+            <span id="badgeStep3" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">Awaiting CT Input</span>
+          </div>
+          <div id="bodyStep3" class="text-xs text-slate-600 leading-relaxed">
+            Enter EXTEM CT and/or INTEM CT (&amp; HEPTEM CT) to evaluate coagulation factors and heparin.
+          </div>
+        </div>
+
+        <!-- Step 4 Card -->
+        <div class="bg-slate-900 text-slate-200 rounded-2xl p-4 shadow-sm space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-2 py-0.5 rounded-md">STEP 4</span>
+            <h3 class="text-sm font-bold text-white">Re-Evaluate &amp; Subsequent Cycles</h3>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            If diffuse/massive bleeding continues after targeted component therapy, draw a <strong class="text-white">new 3 mL citrate blood sample 10–15 minutes</strong> after transfusion completion and repeat ROTEM. Deactivate T-MTP and inform Blood Bank MO once bleeding is controlled.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FLOWCHART & TABLES VIEW -->
+  <section id="viewRef" class="hidden max-w-5xl mx-auto px-4 pt-4 space-y-4">
+    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-3">
+      <div>
+        <h2 class="text-base font-extrabold text-slate-900">Cleaned-Up ROTEM Interpretation Flowchart</h2>
+        <p class="text-xs text-slate-500">Top-down sequential decision pathway for active diffuse or massive bleeding (Trauma vs. Obstetric PPH).</p>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="border border-amber-300 bg-amber-50/70 rounded-2xl p-3.5 space-y-1">
+        <div class="flex justify-between items-center">
+          <span class="bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">STEP 1: STOP FIBRINOLYSIS</span>
+          <span class="text-[11px] font-semibold text-amber-800">First Priority</span>
+        </div>
+        <p class="text-xs font-bold text-slate-900 pt-1">Is EXTEM A5 &lt; 35 mm OR FIBTEM CT &gt; 600 s (flat-line) OR ML ≥ 5% (Trauma) / ≥ 10% (PPH)?</p>
+        <p class="text-xs text-slate-700"><strong>YES &rarr; Give Tranexamic Acid (TXA):</strong> Trauma: <strong>25 mg/kg</strong> IV single bolus (&lt;3h) &bull; PPH: <strong>1–2 g</strong> IV single bolus.</p>
+      </div>
+
+      <div class="text-center text-slate-400 font-bold text-sm">&darr;</div>
+
+      <!-- Step 2 -->
+      <div class="border border-rose-300 bg-rose-50/40 rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="bg-rose-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">STEP 2: BUILD CLOT FIRMNESS</span>
+          <span class="text-[11px] font-semibold text-rose-800">Trigger: EXTEM A5 &lt; 35 mm (or low A5_FIB / platelet dysfunction)</span>
+        </div>
+        <div class="bg-white border border-rose-200 rounded-xl p-2.5 text-xs text-rose-950 font-semibold">
+          SEVERE DEFICIT (EXTEM A5 &lt; 15 mm [Trauma] / ≤ 15 mm [PPH]): Give <strong>2 Platelet Concentrates + Fibrinogen (≥ 4 g)</strong> immediately!
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-white border border-rose-200 rounded-xl p-3 space-y-1">
+            <span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2 py-0.5 rounded">LOW FIBRINOGEN</span>
+            <p class="font-bold text-slate-900 pt-1">FIBTEM A5 &lt; 9 mm (Trauma) | &lt; 10.4 mm (PPH)</p>
+            <ul class="list-disc pl-4 text-slate-700 space-y-0.5">
+              <li>Target A5_FIB: <strong>≥ 12 mm</strong> (Trauma) | <strong>≥ 13.9 mm</strong> (PPH)</li>
+              <li>Dose (g) = [Target rise × Wt (kg)] / 160</li>
+              <li>1 U Cryo ≈ 300 mg Fib (10 U Cryo ≈ 2 g)</li>
+            </ul>
+          </div>
+          <div class="bg-white border border-blue-200 rounded-xl p-3 space-y-1">
+            <span class="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded">LOW PLATELETS / DYSFUNCTION</span>
+            <p class="font-bold text-slate-900 pt-1">FIBTEM A5 ≥ 9 mm (Trauma) | ≥ 10.4 mm (PPH)</p>
+            <ul class="list-disc pl-4 text-slate-700 space-y-0.5">
+              <li><strong>A5_EX &lt; 35 mm</strong> (or ADPTEM &lt;40 Trauma / &lt;35 PPH): <strong>1 pooled/apheresis PC</strong> (or 1U/15kg; Paeds 15 mL/kg)</li>
+              <li><strong>A5_EX &lt; 25 mm</strong> (or low ADPTEM + TRAPTEM): <strong>2 pooled/apheresis PCs</strong></li>
+              <li><strong>DAPT or ADPTEM &lt; 30:</strong> Consider <strong>DDAVP 0.3 µg/kg</strong> + TXA</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center text-slate-400 font-bold text-sm">&darr;</div>
+
+      <!-- Step 3 -->
+      <div class="border border-indigo-300 bg-indigo-50/40 rounded-2xl p-3.5 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="bg-indigo-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">STEP 3: FIX CLOT INITIATION (CT)</span>
+          <span class="text-[11px] font-semibold text-indigo-800">After A5_FIB is corrected</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-white border border-indigo-200 rounded-xl p-3 space-y-1">
+            <p class="font-bold text-slate-900">EXTEM CT &gt; 80 s (with adequate A5_FIB)</p>
+            <p class="text-slate-700">Extrinsic Factor Deficiency: Give <strong>4F-PCC</strong> (Trauma: 15–25 IU/kg | PPH: 10–15 IU/kg) OR <strong>FFP (10–15 mL/kg)</strong>. If FFP fails &amp; A5 OK: consider <strong>rFVIIa 45–90 µg/kg</strong>.</p>
+          </div>
+          <div class="bg-white border border-indigo-200 rounded-xl p-3 space-y-1">
+            <p class="font-bold text-slate-900">INTEM CT &gt; 240 s &rarr; Compare HEPTEM CT</p>
+            <p class="text-slate-700">&bull; HEPTEM normalizes (<span class="font-mono">CT_IN/CT_HEP ≥ 1.25</span>): <strong>Protamine 25–50 mg</strong>.<br/>&bull; HEPTEM still &gt; 240 s: <strong>FFP 10–15 mL/kg</strong> (or <strong>rFVIIa 90 µg/kg</strong> in PPH acquired hemophilia).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center text-slate-400 font-bold text-sm">&darr;</div>
+
+      <!-- Step 4 -->
+      <div class="border border-emerald-300 bg-emerald-50/60 rounded-2xl p-3.5 text-center space-y-1">
+        <span class="bg-emerald-700 text-white text-[10px] font-extrabold px-2 py-0.5 rounded">STEP 4: RE-EVALUATE</span>
+        <p class="text-xs font-bold text-slate-900">Ongoing bleeding? &rarr; Repeat ROTEM 10–15 minutes after transfusion using a new 3 mL citrate sample.</p>
+      </div>
+    </div>
+
+    <!-- Dosing Table -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 overflow-x-auto">
+      <h3 class="text-sm font-extrabold text-slate-900">Quick Fibrinogen Dosing Reference Table</h3>
+      <p class="text-xs text-slate-500 mb-3">Target A5_FIB: ≥ 12 mm (Trauma) | ≥ 13.9 mm (PPH). Formula: <span class="font-mono">Dose (g) = [Target Rise (mm) × Weight (kg)] / 160</span></p>
+      <table class="w-full text-left border-collapse text-xs">
+        <thead>
+          <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+            <th class="py-2 px-3 font-bold">Targeted Increase in A5_FIB</th>
+            <th class="py-2 px-3 font-bold">Fibrinogen Dose (mg/kg BW)</th>
+            <th class="py-2 px-3 font-bold">Fibrinogen Concentrate (mL/kg)</th>
+            <th class="py-2 px-3 font-bold">Cryoprecipitate (mL/kg)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-slate-700">
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 2 mm</td><td class="py-2 px-3 font-semibold">12.5 mg/kg</td><td class="py-2 px-3">0.6 mL/kg (1 g / 80 kg)</td><td class="py-2 px-3">1 mL/kg (5 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 4 mm</td><td class="py-2 px-3 font-semibold">25.0 mg/kg</td><td class="py-2 px-3">1.2 mL/kg (2 g / 80 kg)</td><td class="py-2 px-3">2 mL/kg (10 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 6 mm</td><td class="py-2 px-3 font-semibold">37.5 mg/kg</td><td class="py-2 px-3">1.9 mL/kg (3 g / 80 kg)</td><td class="py-2 px-3">3 mL/kg (15 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 8 mm</td><td class="py-2 px-3 font-semibold">50.0 mg/kg</td><td class="py-2 px-3">2.5 mL/kg (4 g / 80 kg)</td><td class="py-2 px-3">4 mL/kg (20 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 10 mm</td><td class="py-2 px-3 font-semibold">62.5 mg/kg</td><td class="py-2 px-3">3.1 mL/kg (5 g / 80 kg)</td><td class="py-2 px-3">5 mL/kg (25 U / 80 kg)</td></tr>
+          <tr><td class="py-2 px-3 font-bold text-rose-700">+ 12 mm</td><td class="py-2 px-3 font-semibold">75.0 mg/kg</td><td class="py-2 px-3">3.8 mL/kg (6 g / 80 kg)</td><td class="py-2 px-3">6 mL/kg (30 U / 80 kg)</td></tr>
+        </tbody>
+      </table>
+      <p class="text-[11px] text-slate-500 mt-2.5">* Conversion Reference: 1 unit Cryoprecipitate ≈ 300 mg fibrinogen | 1 g fibrinogen ≈ 4 units Cryo | 1 pooled Cryo = 2 g fibrinogen.</p>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let protocol = 'trauma';
+      let ageGroup = 'adult';
+      let latestOrderText = '';
+
+      const el = (id) => document.getElementById(id);
+
+      function switchTab(tab) {
+        if (tab === 'calc') {
+          el('viewCalc').classList.remove('hidden');
+          el('viewRef').classList.add('hidden');
+          el('navCalc').className = 'bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition';
+          el('navRef').className = 'bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition';
+        } else {
+          el('viewCalc').classList.add('hidden');
+          el('viewRef').classList.remove('hidden');
+          el('navRef').className = 'bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition';
+          el('navCalc').className = 'bg-slate-800 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition';
+        }
+      }
+
+      function setProtocol(val) {
+        protocol = val;
+        if (val === 'trauma') {
+          el('protoTrauma').className = 'bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition';
+          el('protoPph').className = 'text-slate-600 py-1.5 text-xs font-bold rounded-lg transition';
+          el('bleedingSubtext').textContent = 'Transfusion considered (MTP, BE < -6, Hb < 10, ISS ≥ 25, TASH ≥ 15)';
+          el('fibHint').textContent = 'Normal: 9–25 (Trigger <9)';
+          el('mlHint').textContent = 'Normal: 0–15% (Trigger ≥5%)';
+          el('adpHint').textContent = 'Trigger <40 (DDAVP <30)';
+          el('trapHint').textContent = '2 PCs if ADP<40 & TRAP<50';
+          el('rfviiaLabel').innerHTML = 'FFP ineffective (A5_EX &amp; A5_FIB OK) &rarr; Consider rFVIIa';
+        } else {
+          el('protoPph').className = 'bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition';
+          el('protoTrauma').className = 'text-slate-600 py-1.5 text-xs font-bold rounded-lg transition';
+          el('bleedingSubtext').textContent = 'Blood loss > 500 mL (vaginal), > 1000 mL (cesarean), or > 1500 mL (severe PPH)';
+          el('fibHint').textContent = 'Normal: 9–25 (Trigger <10.4)';
+          el('mlHint').textContent = 'Normal: 0–15% (Trigger ≥10%)';
+          el('adpHint').textContent = 'Trigger <35 (DDAVP <35)';
+          el('trapHint').textContent = '2 PCs if ADP<35 & TRAP<45';
+          el('rfviiaLabel').innerHTML = 'FFP ineffective or Acquired Hemophilia &rarr; rFVIIa 90 µg/kg';
+        }
+        calculate();
+      }
+
+      function setAgeGroup(val) {
+        ageGroup = val;
+        if (val === 'adult') {
+          el('ageAdult').className = 'bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition';
+          el('agePaeds').className = 'text-slate-600 py-1.5 text-xs font-bold rounded-lg transition';
+        } else {
+          el('agePaeds').className = 'bg-white text-slate-900 shadow-sm py-1.5 text-xs font-bold rounded-lg transition';
+          el('ageAdult').className = 'text-slate-600 py-1.5 text-xs font-bold rounded-lg transition';
+        }
+        calculate();
+      }
+
+      function resetForm(runCalc = true) {
+        el('activeBleeding').checked = true;
+        ['a5Ex', 'a5Fib', 'adptem', 'traptem', 'mlEx', 'ctFib', 'ctEx', 'ctIn', 'ctHep'].forEach(id => el(id).value = '');
+        el('ctFibFlat').checked = false;
+        el('onDapt').checked = false;
+        el('refractoryFfp').checked = false;
+        if (runCalc) calculate();
+      }
+
+      function loadPreset(type) {
+        resetForm(false);
+        el('activeBleeding').checked = true;
+        if (type === 'normal') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 70; el('a5Ex').value = 44; el('a5Fib').value = 14;
+          el('mlEx').value = 3; el('ctEx').value = 58; el('ctIn').value = 165;
+        } else if (type === 'isolatedFib') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 70; el('a5Ex').value = 42; el('a5Fib').value = 8;
+          el('mlEx').value = 0; el('ctEx').value = 50; el('ctIn').value = 149;
+        } else if (type === 'polytrauma') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 70; el('a5Ex').value = 28; el('a5Fib').value = 6;
+          el('mlEx').value = 4; el('ctEx').value = 72;
+        } else if (type === 'severe15') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 80; el('a5Ex').value = 13; el('a5Fib').value = 4;
+          el('mlEx').value = 18; el('ctEx').value = 95;
+        } else if (type === 'pph') {
+          setProtocol('pph'); setAgeGroup('adult');
+          el('weightInput').value = 65; el('a5Ex').value = 29; el('a5Fib').value = 8.5;
+          el('mlEx').value = 12; el('ctEx').value = 74;
+        } else if (type === 'dapt') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 75; el('a5Ex').value = 32; el('a5Fib').value = 13;
+          el('adptem').value = 24; el('traptem').value = 42; el('onDapt').checked = true;
+        } else if (type === 'heparin') {
+          setProtocol('trauma'); setAgeGroup('adult');
+          el('weightInput').value = 75; el('a5Ex').value = 42; el('a5Fib').value = 14;
+          el('ctIn').value = 310; el('ctHep').value = 210;
+        }
+        calculate();
+      }
+
+      function num(id) {
+        const v = el(id).value;
+        return v === '' ? null : parseFloat(v);
+      }
+
+      function setCardState(stepNum, state, badgeText, bodyHtml) {
+        const card = el('cardStep' + stepNum);
+        const badge = el('badgeStep' + stepNum);
+        const body = el('bodyStep' + stepNum);
+        body.innerHTML = bodyHtml;
+        badge.textContent = badgeText;
+
+        if (state === 'action') {
+          card.className = 'bg-white rounded-2xl p-4 shadow-sm border-2 border-rose-500 space-y-2';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-600 text-white';
+        } else if (state === 'ok') {
+          card.className = 'bg-emerald-50/40 rounded-2xl p-4 shadow-sm border border-emerald-300 space-y-2';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white';
+        } else {
+          card.className = 'bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2';
+          badge.className = 'text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600';
+        }
+      }
+
+      function calculate() {
+        const isBleeding = el('activeBleeding').checked;
+        const bleedingCard = el('bleedingCard');
+
+        if (!isBleeding) {
+          bleedingCard.className = 'rounded-2xl p-3 border-2 border-slate-300 bg-slate-50 flex items-start gap-2.5 transition';
+          el('summaryBanner').className = 'bg-slate-800 text-white rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3';
+          el('summaryHeadline').className = 'text-sm sm:text-base font-extrabold text-amber-400 mt-0.5';
+          el('summaryHeadline').textContent = 'Algorithm Halted — No Active Diffuse/Massive Bleeding';
+          setCardState(1, 'idle', 'Halted', 'No active diffuse bleeding.');
+          setCardState(2, 'idle', 'Halted', 'No active diffuse bleeding.');
+          setCardState(3, 'idle', 'Halted', 'No active diffuse bleeding.');
+          latestOrderText = 'ROTEM: No active diffuse/massive bleeding — hemostatic therapy not indicated.';
+          return;
+        }
+
+        bleedingCard.className = 'rounded-2xl p-3 border-2 border-rose-500 bg-rose-50/40 flex items-start gap-2.5 transition';
+
+        const weight = num('weightInput') || 70;
+        const a5Ex = num('a5Ex');
+        const a5Fib = num('a5Fib');
+        const adptem = num('adptem');
+        const traptem = num('traptem');
+        const onDapt = el('onDapt').checked;
+        const mlEx = num('mlEx');
+        const ctFib = num('ctFib');
+        const ctFibFlat = el('ctFibFlat').checked || (ctFib !== null && ctFib > 600);
+        const ctEx = num('ctEx');
+        const ctIn = num('ctIn');
+        const ctHep = num('ctHep');
+        const refractoryFfp = el('refractoryFfp').checked;
+
+        const fibTrigger = protocol === 'trauma' ? 9.0 : 10.4;
+        const fibTarget = protocol === 'trauma' ? 12.0 : 13.9;
+        const mlTrigger = protocol === 'trauma' ? 5 : 10;
+        const adpCutoff = protocol === 'trauma' ? 40 : 35;
+        const trapCutoff = protocol === 'trauma' ? 50 : 45;
+        const ddavpCutoff = protocol === 'trauma' ? 30 : 35;
+
+        const hasAnyInput = [a5Ex, a5Fib, adptem, traptem, mlEx, ctFib, ctEx, ctIn, ctHep].some(v => v !== null) || ctFibFlat || onDapt || refractoryFfp;
+
+        if (!hasAnyInput) {
+          el('summaryBanner').className = 'bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-3';
+          el('summaryHeadline').className = 'text-sm sm:text-base font-extrabold text-slate-900 mt-0.5';
+          el('summaryHeadline').textContent = 'Enter ROTEM values to generate targeted therapy';
+          setCardState(1, 'idle', 'Awaiting Input', `Checks if <span class="font-mono">EXTEM A5 &lt; 35 mm</span> OR <span class="font-mono">FIBTEM CT &gt; 600 s</span> OR <span class="font-mono">ML ≥ ${mlTrigger}%</span>.`);
+          setCardState(2, 'idle', 'Awaiting EXTEM A5', 'Enter EXTEM A5 and/or FIBTEM A5 (plus optional ADPTEM/TRAPTEM) to evaluate clot strength.');
+          setCardState(3, 'idle', 'Awaiting CT Input', 'Enter EXTEM CT and/or INTEM CT (&amp; HEPTEM CT) to evaluate coagulation factors and heparin.');
+          latestOrderText = '';
+          return;
+        }
+
+        let totalInterventions = 0;
+        const orderLines = [`ROTEM ORDER SUMMARY (${protocol.toUpperCase()} | ${ageGroup.toUpperCase()} | ${weight} kg)`];
+
+        // --- STEP 1: FIBRINOLYSIS ---
+        const txaReasons = [];
+        if (a5Ex !== null && a5Ex < 35) txaReasons.push(`EXTEM A5 (${a5Ex} mm) &lt; 35 mm`);
+        if (ctFibFlat) txaReasons.push(`FIBTEM Flat-line (CT &gt; 600 s)`);
+        if (mlEx !== null && mlEx >= mlTrigger) txaReasons.push(`ML (${mlEx}%) ≥ ${mlTrigger}%`);
+
+        if (txaReasons.length > 0) {
+          totalInterventions++;
+          const txaDose = protocol === 'trauma'
+            ? `<strong>${Math.round(25 * weight)} mg</strong> (25 mg/kg) IV single bolus (within 3h)`
+            : `<strong>1–2 g</strong> IV single bolus (repeat if indicated)`;
+          setCardState(1, 'action', 'Give TXA', `
+            <p class="font-semibold text-amber-900">Trigger: ${txaReasons.join(' + ')}</p>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-slate-900 mt-1">
+              <strong>Administer Tranexamic Acid (TXA):</strong> ${txaDose}
+            </div>`);
+          orderLines.push(`• TXA: ${txaDose.replace(/<[^>]*>/g, '')}`);
+        } else if (a5Ex !== null || mlEx !== null || ctFib !== null) {
+          setCardState(1, 'ok', 'No Lysis Trigger', 'No antifibrinolytic trigger met. Proceed to Step 2.');
+        } else {
+          setCardState(1, 'idle', 'Awaiting Input', `Checks if <span class="font-mono">EXTEM A5 &lt; 35 mm</span> OR <span class="font-mono">FIBTEM CT &gt; 600 s</span> OR <span class="font-mono">ML ≥ ${mlTrigger}%</span>.`);
+        }
+
+        // --- STEP 2: CLOT FIRMNESS (FIBRINOGEN + PLATELETS + MULTIPLATE) ---
+        let needFib = false;
+        let fibMin4g = false;
+        let pltPacks = 0; // 0, 1, or 2
+        let needDdavp = false;
+        const step2Blocks = [];
+
+        // Severe threshold check (A5_EX < 15 Trauma or <= 15 PPH)
+        const isSevere15 = a5Ex !== null && (protocol === 'trauma' ? a5Ex < 15 : a5Ex <= 15);
+        if (isSevere15) {
+          pltPacks = 2;
+          needFib = true;
+          fibMin4g = true;
+        } else {
+          if (a5Fib !== null && a5Fib < fibTrigger) {
+            needFib = true;
+          }
+          if (a5Ex !== null && a5Ex < 35) {
+            if (a5Fib === null || a5Fib >= fibTrigger) {
+              pltPacks = a5Ex < 25 ? 2 : 1;
+            }
+          }
+        }
+
+        // ROTEM Platelet / Multiplate / DAPT checks
+        const adpLow = adptem !== null && adptem < adpCutoff;
+        const trapLow = traptem !== null && traptem < trapCutoff;
+        if (adpLow && trapLow) {
+          pltPacks = Math.max(pltPacks, 2);
+        } else if (adpLow || trapLow) {
+          pltPacks = Math.max(pltPacks, 1);
+        }
+        if (onDapt || (adptem !== null && adptem < ddavpCutoff)) {
+          needDdavp = true;
+        }
+
+        if (needFib) {
+          totalInterventions++;
+          const currFib = a5Fib !== null ? a5Fib : 0;
+          const rise = Math.max(0, +(fibTarget - currFib).toFixed(1));
+          let fibGrams = +((rise * weight) / 160).toFixed(2);
+          if (fibMin4g && fibGrams < 4) fibGrams = 4.0;
+          const fibMg = Math.round(fibGrams * 1000);
+          const singleCryo = Math.ceil(fibMg / 300);
+          const pooledCryo = Math.floor(fibGrams / 2);
+          const remCryo = Math.ceil(((fibGrams % 2) * 1000) / 300);
+
+          let cryoStr = `${singleCryo} U Cryoprecipitate (~300 mg/U)`;
+          if (pooledCryo >= 1) {
+            cryoStr += remCryo > 0
+              ? ` OR ${pooledCryo} pooled cryo (2g) + ${remCryo} single U`
+              : ` OR ${pooledCryo} pooled cryo (2g/pack)`;
+          }
+
+          const fibTriggerText = isSevere15
+            ? `Severe deficit: EXTEM A5 (${a5Ex} mm) ${protocol === 'trauma' ? '&lt; 15' : '≤ 15'} mm (requires ≥ 4 g fibrinogen + 2 PCs)`
+            : `FIBTEM A5 (${a5Fib} mm) &lt; ${fibTrigger} mm (Target ≥ ${fibTarget} mm)`;
+
+          step2Blocks.push(`
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+              <div class="font-bold text-rose-900">Fibrinogen Replacement (${fibTriggerText})</div>
+              <div>Give <strong>${fibGrams} g (${fibMg} mg) Fibrinogen Concentrate</strong> &nbsp;OR&nbsp; <strong>${cryoStr}</strong></div>
+            </div>`);
+          orderLines.push(`• Fibrinogen: ${fibGrams} g (${fibMg} mg) OR ${cryoStr}`);
+        }
+
+        if (pltPacks > 0) {
+          totalInterventions++;
+          const randomUnits = Math.max(1, Math.round(weight / 15)) * pltPacks;
+          const paedsVol = Math.round(15 * weight) * pltPacks;
+          const pltDoseText = ageGroup === 'adult'
+            ? `<strong>${pltPacks} pooled or apheresis PC${pltPacks > 1 ? 's' : ''}</strong> (or ~${randomUnits} random units at 1U/15kg)`
+            : `<strong>${paedsVol} mL</strong> Platelet Concentrate (${15 * pltPacks} mL/kg BW)`;
+
+          const pltReasons = [];
+          if (isSevere15) pltReasons.push(`EXTEM A5 (${a5Ex} mm) ${protocol === 'trauma' ? '&lt; 15' : '≤ 15'} mm`);
+          else if (a5Ex !== null && a5Ex < 25) pltReasons.push(`EXTEM A5 (${a5Ex} mm) &lt; 25 mm`);
+          else if (a5Ex !== null && a5Ex < 35) pltReasons.push(`EXTEM A5 (${a5Ex} mm) &lt; 35 mm`);
+          if (adpLow) pltReasons.push(`ADPTEM (${adptem}) &lt; ${adpCutoff}`);
+          if (trapLow) pltReasons.push(`TRAPTEM (${traptem}) &lt; ${trapCutoff}`);
+
+          step2Blocks.push(`
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+              <div class="font-bold text-blue-900">Platelet Transfusion (${pltReasons.join(' + ')})</div>
+              <div>Give ${pltDoseText}</div>
+            </div>`);
+          orderLines.push(`• Platelets: ${pltDoseText.replace(/<[^>]*>/g, '')}`);
+        }
+
+        if (needDdavp) {
+          totalInterventions++;
+          const ddavpDose = +(0.3 * weight).toFixed(1);
+          step2Blocks.push(`
+            <div class="bg-sky-50 border border-sky-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+              <div class="font-bold text-sky-900">Antiplatelet Reversal (${onDapt ? 'DAPT' : `ADPTEM ${adptem} &lt; ${ddavpCutoff}`})</div>
+              <div>Consider <strong>Desmopressin (DDAVP): ${ddavpDose} µg</strong> (0.3 µg/kg) IV + TXA (${Math.round(25 * weight)} mg)</div>
+            </div>`);
+          orderLines.push(`• DDAVP: ${ddavpDose} µg (0.3 µg/kg) IV`);
+        }
+
+        if (step2Blocks.length > 0) {
+          setCardState(2, 'action', 'Action Needed', step2Blocks.join(''));
+        } else if (a5Ex !== null && a5Fib === null && a5Ex < 35) {
+          setCardState(2, 'idle', 'Need FIBTEM A5', `EXTEM A5 = ${a5Ex} mm (&lt; 35 mm). Enter <strong>FIBTEM A5</strong> to choose between Fibrinogen (&lt; ${fibTrigger} mm) vs. Platelets (≥ ${fibTrigger} mm).`);
+        } else if (a5Ex !== null || a5Fib !== null || adptem !== null || traptem !== null) {
+          setCardState(2, 'ok', 'Clot Firmness OK', `Clot firmness within target (EXTEM A5 ${a5Ex !== null ? a5Ex + ' mm' : 'OK'}, FIBTEM A5 ${a5Fib !== null ? a5Fib + ' mm' : 'OK'}). Proceed to Step 3.`);
+        } else {
+          setCardState(2, 'idle', 'Awaiting EXTEM A5', 'Enter EXTEM A5 and/or FIBTEM A5 to evaluate clot strength.');
+        }
+
+        // --- STEP 3: CLOTTING TIMES & rFVIIa ---
+        const step3Blocks = [];
+        const fibAdequate = a5Fib === null || a5Fib >= fibTrigger;
+
+        if (ctEx !== null && ctEx > 80) {
+          totalInterventions++;
+          const pccRange = protocol === 'trauma'
+            ? `${Math.round(15 * weight)}–${Math.round(25 * weight)} IU (15–25 IU/kg)`
+            : `${Math.round(10 * weight)}–${Math.round(15 * weight)} IU (10–15 IU/kg)`;
+          const ffpRange = `${Math.round(10 * weight)}–${Math.round(15 * weight)} mL (10–15 mL/kg)`;
+          const caveat = protocol === 'pph'
+            ? '<div class="text-[11px] text-amber-800 font-semibold mt-1">Caveat: FFP may dilute fibrinogen in PPH! Ensure A5_FIB ≥ 10.4 mm first.</div>'
+            : (!fibAdequate ? '<div class="text-[11px] text-amber-800 font-semibold mt-1">Note: Correct low FIBTEM A5 alongside/before interpreting prolonged EXTEM CT.</div>' : '');
+
+          step3Blocks.push(`
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+              <div class="font-bold text-indigo-950">Extrinsic Factor Deficiency (EXTEM CT = ${ctEx} s &gt; 80 s)</div>
+              <div>Give <strong>4F-PCC: ${pccRange}</strong> &nbsp;OR&nbsp; <strong>FFP: ${ffpRange}</strong></div>
+              ${caveat}
+            </div>`);
+          orderLines.push(`• Coag Factors: 4F-PCC ${pccRange} OR FFP ${ffpRange}`);
+        }
+
+        if (ctIn !== null && ctIn > 240) {
+          if (ctHep !== null && ctHep > 0) {
+            totalInterventions++;
+            const ratio = +(ctIn / ctHep).toFixed(2);
+            if (ratio >= 1.25 || ctHep <= 240) {
+              step3Blocks.push(`
+                <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+                  <div class="font-bold text-purple-950">Heparin Effect Detected (CT_IN / CT_HEP = ${ratio} ≥ 1.25)</div>
+                  <div>Give <strong>Protamine: 25–50 mg IV</strong> (2.5–5 mL)</div>
+                </div>`);
+              orderLines.push(`• Protamine: 25–50 mg IV (ratio ${ratio})`);
+            } else {
+              const ffpVol = `${Math.round(10 * weight)}–${Math.round(15 * weight)} mL`;
+              step3Blocks.push(`
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-2.5 text-slate-900 space-y-1">
+                  <div class="font-bold text-indigo-950">Intrinsic Factor Deficiency (HEPTEM CT = ${ctHep} s &gt; 240 s)</div>
+                  <div>Consider <strong>FFP: ${ffpVol}</strong> (10–15 mL/kg)</div>
+                </div>`);
+              orderLines.push(`• Intrinsic Factors: FFP ${ffpVol}`);
+            }
+          } else {
+            step3Blocks.push(`
+              <div class="bg-purple-50 border border-purple-200 rounded-xl p-2.5 text-slate-900">
+                <strong>INTEM CT = ${ctIn} s (&gt; 240 s):</strong> Enter <strong>HEPTEM CT</strong> to differentiate Heparin Effect (CT_IN/CT_HEP ≥ 1.25 &rarr; Protamine) vs. Intrinsic Factor Deficiency (&rarr; FFP).
+              </div>`);
+          }
+        }
+
+        if (refractoryFfp) {
+          totalInterventions++;
+          const rfLow = Math.round(45 * weight);
+          const rfHigh = Math.round(90 * weight);
+          const rfDose = protocol === 'pph'
+            ? `<strong>${rfHigh} µg</strong> (90 µg/kg; range ${rfLow}–${rfHigh} µg)`
+            : `<strong>${rfLow}–${rfHigh} µg</strong> (45–90 µg/kg)`;
+          step3Blocks.push(`
+            <div class="bg-amber-50 border border-amber-300 rounded-xl p-2.5 text-slate-900 space-y-1">
+              <div class="font-bold text-amber-950">Rescue Recombinant Factor VIIa (rFVIIa)</div>
+              <div>Ensure A5_EX &amp; A5_FIB are adequate first: Consider <strong>rFVIIa ${rfDose}</strong> IV</div>
+            </div>`);
+          orderLines.push(`• Rescue rFVIIa: ${rfDose.replace(/<[^>]*>/g, '')}`);
+        }
+
+        if (step3Blocks.length > 0) {
+          setCardState(3, 'action', 'Action Needed', step3Blocks.join(''));
+        } else if (ctEx !== null || ctIn !== null) {
+          setCardState(3, 'ok', 'Clotting Times OK', 'Clotting times within acceptable limits (EXTEM CT ≤ 80 s, INTEM CT ≤ 240 s). Proceed to Step 4.');
+        } else {
+          setCardState(3, 'idle', 'Awaiting CT Input', 'Enter EXTEM CT and/or INTEM CT (&amp; HEPTEM CT) to evaluate coagulation factors and heparin.');
+        }
+
+        // Update Top Summary Banner
+        if (totalInterventions > 0) {
+          el('summaryBanner').className = 'bg-rose-50 rounded-2xl p-4 shadow-sm border-2 border-rose-500 flex flex-wrap items-center justify-between gap-3';
+          el('summaryHeadline').className = 'text-sm sm:text-base font-extrabold text-rose-950 mt-0.5';
+          el('summaryHeadline').textContent = `${totalInterventions} Targeted Intervention${totalInterventions > 1 ? 's' : ''} Recommended`;
+          latestOrderText = orderLines.join('\n');
+        } else {
+          el('summaryBanner').className = 'bg-emerald-50 rounded-2xl p-4 shadow-sm border border-emerald-300 flex flex-wrap items-center justify-between gap-3';
+          el('summaryHeadline').className = 'text-sm sm:text-base font-extrabold text-emerald-950 mt-0.5';
+          el('summaryHeadline').textContent = 'All entered ROTEM parameters are within target thresholds';
+          latestOrderText = orderLines.join('\n') + '\n• All entered parameters within target thresholds.';
+        }
+      }
+
+      // Bindings
+      el('navCalc').addEventListener('click', () => switchTab('calc'));
+      el('navRef').addEventListener('click', () => switchTab('ref'));
+      el('btnReset').addEventListener('click', () => resetForm(true));
+      el('protoTrauma').addEventListener('click', () => setProtocol('trauma'));
+      el('protoPph').addEventListener('click', () => setProtocol('pph'));
+      el('ageAdult').addEventListener('click', () => setAgeGroup('adult'));
+      el('agePaeds').addEventListener('click', () => setAgeGroup('paeds'));
+
+      ['activeBleeding', 'ctFibFlat', 'onDapt', 'refractoryFfp'].forEach(id => {
+        el(id).addEventListener('change', calculate);
+      });
+      ['weightInput', 'a5Ex', 'a5Fib', 'adptem', 'traptem', 'mlEx', 'ctFib', 'ctEx', 'ctIn', 'ctHep'].forEach(id => {
+        el(id).addEventListener('input', calculate);
+      });
+
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => loadPreset(btn.getAttribute('data-preset')));
+      });
+
+      el('btnCopy').addEventListener('click', () => {
+        if (!latestOrderText) return;
+        navigator.clipboard.writeText(latestOrderText).then(() => {
+          const btn = el('btnCopy');
+          btn.textContent = 'Copied!';
+          btn.classList.replace('bg-slate-100', 'bg-emerald-600');
+          btn.classList.replace('text-slate-800', 'text-white');
+          setTimeout(() => {
+            btn.textContent = 'Copy Order Summary';
+            btn.classList.replace('bg-emerald-600', 'bg-slate-100');
+            btn.classList.replace('text-white', 'text-slate-800');
+          }, 1800);
+        });
+      });
+
+      calculate();
+    });
+  </script>
+</body>
+</html>
